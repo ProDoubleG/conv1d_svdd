@@ -11,26 +11,16 @@ config = c.GlobalConfig()
 batch_size = config.BATCH_SIZE
 final_dimension = config.FINAL_SPACE_DIMENSION
 
-# INPUT : csv_address of data
+# INPUT : csv_address of data shape: (length_of_data, number_of_columns)
 # OUTPUT : reshaped numpy form of the data
-def reshape_by_batch(csv_address,batch_size=config,use_fourier=False, use_normalize=True):
+def reshape_by_batch(csv_address,batch_size=batch_size):
     datafile = pd.read_csv(csv_address) # read file
-    data = datafile[['AccelX','AccelY','AccelZ']] # get XYZ axis data only
     data = data[:len(data) - len(data)%batch_size] # trim dataset to divisable lentgh
-    if use_fourier:
-        dimension = 6
-        data['FftX'] = np.fft.fft(data['AccelX']) / batch_size
-        data['FftY'] = np.fft.fft(data['AccelY']) / batch_size
-        data['FftZ'] = np.fft.fft(data['AccelZ']) / batch_size
-    else:
-        dimension = 3
-    
-    if use_normalize:
-        data['AccelX'] =  (data['AccelX'] - data['AccelX'].mean())/ data['AccelX'].std()
-        data['AccelY'] =  (data['AccelY'] - data['AccelY'].mean())/ data['AccelY'].std()
-        data['AccelZ'] =  (data['AccelZ'] - data['AccelZ'].mean())/ data['AccelZ'].std()
+    #
+    ...
+    #
     data_list = np.array(data) # turn dataset into numpy array(for reshape)
-    data_reshaped = data_list.reshape((int)(len(data_list)/batch_size),batch_size,dimension) # reshape the dataset : (number_of_data, batch_size, dimension(3))
+    data_reshaped = data_list.reshape((int)(len(data_list)/batch_size),batch_size,data_list.shape[-1]) # reshape the dataset : (number_of_data, batch_size, dimension)
      
     return data_reshaped
 
